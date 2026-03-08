@@ -23,15 +23,34 @@ gsap.to('.circle-2', {
   delay: 1
 });
 
-// 2. Header Scroll Effect
+// 2. Header & Mobile Menu
+const header = document.querySelector('.header');
+const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+const nav = document.querySelector('.nav');
+const navLinks = document.querySelectorAll('.nav-link');
+
 window.addEventListener('scroll', () => {
-  const header = document.querySelector('.header');
   if (window.scrollY > 50) {
     header.classList.add('scrolled');
   } else {
     header.classList.remove('scrolled');
   }
 });
+
+mobileMenuToggle.addEventListener('click', () => {
+  mobileMenuToggle.classList.toggle('active');
+  nav.classList.toggle('active');
+  document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : 'auto';
+});
+
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenuToggle.classList.remove('active');
+    nav.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  });
+});
+
 
 // 3. Hero Entrance Animation
 const heroTl = gsap.timeline();
