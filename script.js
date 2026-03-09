@@ -148,7 +148,7 @@ if (parallaxLogo) {
   });
 
   // Mobile device orientation (gyroscope)
-  window.addEventListener('deviceorientation', (e) => {
+  const handleOrientation = (e) => {
     if (e.gamma !== null && e.beta !== null) {
       // e.gamma: left-to-right tilt in degrees [-90 to 90]
       // e.beta: front-to-back tilt in degrees [-180 to 180]
@@ -166,5 +166,31 @@ if (parallaxLogo) {
       
       parallaxLogo.style.transform = `translate(${moveX}px, ${moveY}px)`;
     }
-  });
+  };
+
+  // iOS 13+ requires explicit permission for DeviceOrientation
+  let orientationInitialized = false;
+
+  const initOrientation = () => {
+    if (orientationInitialized) return;
+
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', handleOrientation);
+            orientationInitialized = true;
+          }
+        })
+        .catch(console.error);
+    } else {
+      // Non-iOS 13+ devices
+      window.addEventListener('deviceorientation', handleOrientation);
+      orientationInitialized = true;
+    }
+  };
+
+  // Request permission on the first click/touch on the page
+  document.body.addEventListener('click', initOrientation, { once: true });
+  document.body.addEventListener('touchstart', initOrientation, { once: true });
 }
