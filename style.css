@@ -77,6 +77,31 @@ h4 {
   left: -100px;
 }
 
+/* Background Logo Parallax */
+.bg-logo-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1; /* Behind content but above the deep gradient */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bg-logo {
+  width: 90vw;
+  max-width: 800px;
+  opacity: 0.05;
+  filter: blur(8px);
+  transform: translate(0, 0); 
+  /* Smooths out mobile sensor noise */
+  transition: transform 0.15s ease-out;
+}
+
 /* Layout */
 .container {
   max-width: var(--container-width);

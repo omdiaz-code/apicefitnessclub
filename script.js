@@ -134,3 +134,37 @@ document.querySelectorAll('.pricing-card').forEach(card => {
 
 // 6. Smooth Scroll (already handled by CSS but adding GSAP for extra smoothness if needed)
 // Using CSS scroll-behavior: smooth is usually enough for simple sites.
+
+// 7. Background Parallax Logo
+const parallaxLogo = document.getElementById('parallax-logo');
+
+if (parallaxLogo) {
+  // Desktop mouse movement parallax
+  document.addEventListener('mousemove', (e) => {
+    const mouseX = (e.clientX / window.innerWidth - 0.5) * 60; // Max 30px move
+    const mouseY = (e.clientY / window.innerHeight - 0.5) * 60;
+    
+    parallaxLogo.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+  });
+
+  // Mobile device orientation (gyroscope)
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.gamma !== null && e.beta !== null) {
+      // e.gamma: left-to-right tilt in degrees [-90 to 90]
+      // e.beta: front-to-back tilt in degrees [-180 to 180]
+      let tiltX = e.gamma;
+      let tiltY = e.beta;
+      
+      // Cap the tilt to avoid extreme movements
+      if (tiltX > 40) tiltX = 40;
+      if (tiltX < -40) tiltX = -40;
+      if (tiltY > 40) tiltY = 40;
+      if (tiltY < -40) tiltY = -40;
+      
+      const moveX = tiltX * 1.5;
+      const moveY = tiltY * 1.5;
+      
+      parallaxLogo.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    }
+  });
+}
