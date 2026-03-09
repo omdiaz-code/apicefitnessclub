@@ -1,5 +1,3 @@
-import './style.css'
-
 // GSAP Init
 gsap.registerPlugin(ScrollTrigger);
 
