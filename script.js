@@ -89,7 +89,7 @@ heroTl.from('.badge', {
 const sections = document.querySelectorAll('.section');
 
 sections.forEach((section) => {
-  const revealElements = section.querySelectorAll('.pricing-card, .benefit-item, .contest-info, .section-title, .contest-image, .team-card');
+  const revealElements = section.querySelectorAll('.pricing-card, .benefit-item, .contest-info, .section-title, .contest-image, .team-card, .exp-card, .facility-item');
   
   gsap.from(revealElements, {
     scrollTrigger: {
