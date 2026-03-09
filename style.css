@@ -328,32 +328,87 @@ h4 {
 }
 
 .pricing-card {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 48px;
   border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: var(--transition-smooth);
   position: relative;
   overflow: hidden;
   color: white;
   z-index: 15;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Subtle background glow for all cards */
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.pricing-card:hover::before {
+  opacity: 1;
 }
 
 .pricing-card:hover {
   transform: translateY(-16px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.08);
-  border-color: var(--accent-gold);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15), 0 0 20px rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.5);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .pricing-card.featured {
-  background: linear-gradient(135deg, rgba(0, 28, 61, 0.8), rgba(0, 18, 41, 0.9));
+  background: linear-gradient(135deg, rgba(0, 28, 61, 0.9), rgba(0, 18, 41, 0.95));
   border: 2px solid var(--accent-gold);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(212, 175, 55, 0.05);
+}
+
+.pricing-card.featured::before {
+  opacity: 0.5;
+}
+
+.pricing-card.featured:hover {
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3), 0 0 30px rgba(212, 175, 55, 0.2);
 }
 
 .pricing-card.featured .plan-price {
   color: var(--accent-gold);
+}
+
+/* Plan Icons */
+.plan-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--accent-gold);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pricing-card.featured .plan-icon-wrapper {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.plan-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .tag {
@@ -366,45 +421,59 @@ h4 {
   position: absolute;
   top: 32px;
   right: 32px;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
 
 .plan-name {
   font-size: 1.5rem;
-  margin-bottom: 40px;
+  margin-bottom: 12px;
 }
 
 .plan-price {
   font-size: 3.5rem;
   font-weight: 900;
-  margin-bottom: 40px;
-  color: var(--accent-gold);
+  margin-bottom: 32px;
+  color: var(--white);
+  line-height: 1;
 }
 
 .plan-price span {
   font-size: 1.1rem;
   font-weight: 400;
   opacity: 0.6;
+  color: white;
+}
+
+.plan-divider {
+  height: 1px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.15), transparent);
+  margin-bottom: 32px;
 }
 
 .plan-features {
   list-style: none;
   margin-bottom: 48px;
+  flex-grow: 1;
 }
 
 .plan-features li {
   margin-bottom: 16px;
-  opacity: 0.8;
+  opacity: 0.9;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.plan-features li::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--accent-gold);
-  border-radius: 50%;
+.check-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+.pricing-card .btn {
+  width: 100%;
+  margin-top: auto;
 }
 
 /* Contest Section */
