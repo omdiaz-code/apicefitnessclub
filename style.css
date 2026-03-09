@@ -95,8 +95,8 @@ h4 {
 .bg-logo {
   width: 90vw;
   max-width: 800px;
-  opacity: 0.05;
-  filter: blur(8px);
+  opacity: 0.15;
+  filter: blur(4px);
   transform: translate(0, 0); 
   /* Smooths out mobile sensor noise */
   transition: transform 0.15s ease-out;
