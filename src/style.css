@@ -33,7 +33,10 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: 'Outfit', sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.02em;
@@ -84,7 +87,8 @@ h1, h2, h3, h4 {
 .section {
   padding: 120px 0;
   position: relative;
-  z-index: 10; /* Ensure all sections are above bg-circles */
+  z-index: 10;
+  /* Ensure all sections are above bg-circles */
 }
 
 /* Header */
@@ -433,15 +437,49 @@ h1, h2, h3, h4 {
 }
 
 /* Benefits */
+.benefits-intro {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 64px;
+  line-height: 1.7;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
 .benefit-item {
-  padding: 64px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 64px 40px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 40px;
   text-align: center;
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: white;
+  transition: var(--transition-smooth);
+}
+
+.benefit-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent-gold);
+  transform: translateY(-8px);
+}
+
+.benefit-item h3 {
+  font-size: 1.4rem;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
+}
+
+.benefit-item p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
 }
 
 .benefit-icon {
@@ -449,6 +487,7 @@ h1, h2, h3, h4 {
   margin-bottom: 32px;
   display: block;
 }
+
 
 /* Footer */
 .footer {
@@ -469,6 +508,15 @@ h1, h2, h3, h4 {
   border-radius: 12px;
   margin-bottom: 32px;
 }
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
 
 .footer-contact h4 {
   color: var(--accent-gold);
@@ -613,12 +661,17 @@ h1, h2, h3, h4 {
     margin-bottom: 40px;
   }
 
-  .pricing-grid, .contest-container, .footer-content, .team-grid {
+  .pricing-grid,
+  .contest-container,
+  .footer-content,
+  .team-grid {
     grid-template-columns: 1fr;
     gap: 24px;
   }
 
-  .pricing-card, .team-card, .benefit-item {
+  .pricing-card,
+  .team-card,
+  .benefit-item {
     padding: 32px 24px;
   }
 
@@ -643,4 +696,3 @@ h1, h2, h3, h4 {
     max-height: 150px;
   }
 }
-
