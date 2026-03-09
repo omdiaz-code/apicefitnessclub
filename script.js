@@ -139,13 +139,21 @@ document.querySelectorAll('.pricing-card').forEach(card => {
 const parallaxLogo = document.getElementById('parallax-logo');
 
 if (parallaxLogo) {
-  // Desktop mouse movement parallax
-  document.addEventListener('mousemove', (e) => {
-    const mouseX = (e.clientX / window.innerWidth - 0.5) * 60; // Max 30px move
-    const mouseY = (e.clientY / window.innerHeight - 0.5) * 60;
-    
-    parallaxLogo.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-  });
+  // Desktop mouse movement parallax (only for non-touch devices)
+  const isTouchDevice = () => {
+    return (('ontouchstart' in window) ||
+       (navigator.maxTouchPoints > 0) ||
+       (navigator.msMaxTouchPoints > 0));
+  };
+
+  if (!isTouchDevice()) {
+    document.addEventListener('mousemove', (e) => {
+      const mouseX = (e.clientX / window.innerWidth - 0.5) * 60; // Max 30px move
+      const mouseY = (e.clientY / window.innerHeight - 0.5) * 60;
+      
+      parallaxLogo.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+    });
+  }
 
   // Mobile device orientation (gyroscope)
   const handleOrientation = (e) => {
