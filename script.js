@@ -139,6 +139,14 @@ document.querySelectorAll('.pricing-card').forEach(card => {
 const parallaxLogo = document.getElementById('parallax-logo');
 
 if (parallaxLogo) {
+  let posX = 0;
+  let posY = 0;
+  let targetX = 0;
+  let targetY = 0;
+  let isMouseMode = false;
+  let lastGamma = null;
+  let lastBeta = null;
+
   // Desktop mouse movement parallax (only for non-touch devices)
   const isTouchDevice = () => {
     return (('ontouchstart' in window) ||
@@ -148,33 +156,61 @@ if (parallaxLogo) {
 
   if (!isTouchDevice()) {
     document.addEventListener('mousemove', (e) => {
-      const mouseX = (e.clientX / window.innerWidth - 0.5) * 60; // Max 30px move
-      const mouseY = (e.clientY / window.innerHeight - 0.5) * 60;
-      
-      parallaxLogo.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      isMouseMode = true;
+      targetX = (e.clientX / window.innerWidth - 0.5) * 60; // Max 30px move
+      targetY = (e.clientY / window.innerHeight - 0.5) * 60;
     });
   }
 
   // Mobile device orientation (gyroscope)
   const handleOrientation = (e) => {
     if (e.gamma !== null && e.beta !== null) {
-      // e.gamma: left-to-right tilt in degrees [-90 to 90]
-      // e.beta: front-to-back tilt in degrees [-180 to 180]
-      let tiltX = e.gamma;
-      let tiltY = e.beta;
+      isMouseMode = false; // Switch to gyro mode
       
-      // Cap the tilt to avoid extreme movements
-      if (tiltX > 40) tiltX = 40;
-      if (tiltX < -40) tiltX = -40;
-      if (tiltY > 40) tiltY = 40;
-      if (tiltY < -40) tiltY = -40;
+      if (lastGamma !== null && lastBeta !== null) {
+        let deltaX = e.gamma - lastGamma;
+        let deltaY = e.beta - lastBeta;
+        
+        // Ignore large jumps (like flipping the phone)
+        if (Math.abs(deltaX) > 30) deltaX = 0;
+        if (Math.abs(deltaY) > 30) deltaY = 0;
+
+        // Add delta to current position (multiplied for sensitivity)
+        posX += deltaX * 4;
+        posY += deltaY * 4;
+
+        // Cap the maximum displacement
+        if (posX > 80) posX = 80;
+        if (posX < -80) posX = -80;
+        if (posY > 80) posY = 80;
+        if (posY < -80) posY = -80;
+      }
       
-      const moveX = tiltX * 1.5;
-      const moveY = tiltY * 1.5;
-      
-      parallaxLogo.style.transform = `translate(${moveX}px, ${moveY}px)`;
+      lastGamma = e.gamma;
+      lastBeta = e.beta;
     }
   };
+
+  // Animation Loop for smooth physics and spring back
+  const updateParallax = () => {
+    if (isMouseMode) {
+      // Smoothly follow the mouse target
+      posX += (targetX - posX) * 0.1;
+      posY += (targetY - posY) * 0.1;
+    } else {
+      // Gyro mode: Spring back to center (0,0) gently
+      posX *= 0.95; 
+      posY *= 0.95;
+    }
+
+    if (Math.abs(posX) < 0.01) posX = 0;
+    if (Math.abs(posY) < 0.01) posY = 0;
+
+    parallaxLogo.style.transform = `translate(${posX}px, ${posY}px)`;
+    requestAnimationFrame(updateParallax);
+  };
+  
+  updateParallax();
 
   // iOS 13+ requires explicit permission for DeviceOrientation
   let orientationInitialized = false;
