@@ -57,7 +57,7 @@ heroTl.from('.badge', {
   y: 20,
   opacity: 0,
   duration: 0.8,
-  ease: 'custom'
+  ease: 'power2.out'
 })
 .from('.hero-title', {
   y: 60,
@@ -80,9 +80,9 @@ heroTl.from('.badge', {
 .from('.hero-actions .btn', {
   y: 20,
   opacity: 0,
-  stagger: 0.2,
+  stagger: 0.1,
   duration: 0.8,
-  ease: 'back.out(1.7)'
+  ease: 'power3.out'
 }, '-=0.6');
 
 // 4. Reveal Sections on Scroll

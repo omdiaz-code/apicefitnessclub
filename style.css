@@ -221,8 +221,10 @@ h4 {
 
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 20;
   max-width: 900px;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .badge {
@@ -269,6 +271,8 @@ h4 {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 30;
 }
 
 /* Buttons */
@@ -285,6 +289,8 @@ h4 {
   letter-spacing: 0.05em;
   transition: var(--transition-smooth);
   cursor: pointer;
+  opacity: 1;
+  visibility: visible;
 }
 
 .btn-primary {
