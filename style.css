@@ -242,9 +242,9 @@ h4 {
 
 .hero-title {
   font-size: clamp(3.5rem, 8vw, 6.5rem);
-  line-height: 0.95;
+  line-height: 1.1;
   font-weight: 900;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   background: linear-gradient(to bottom, #fff, #a5a5a5);
   -webkit-background-clip: text;
   background-clip: text;
@@ -261,8 +261,9 @@ h4 {
 .hero-text {
   font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.7);
-  max-width: 600px;
-  margin-bottom: 48px;
+  max-width: 650px;
+  margin-bottom: 56px;
+  line-height: 1.6;
 }
 
 .hero-actions {

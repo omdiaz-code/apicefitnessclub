@@ -78,12 +78,13 @@ heroTl.from('.badge', {
   ease: 'power3.out'
 }, '-=0.8')
 .from('.hero-actions .btn', {
-  y: 20,
+  y: 40,
   opacity: 0,
-  stagger: 0.1,
+  stagger: 0.2,
   duration: 0.8,
-  ease: 'power3.out'
-}, '-=0.6');
+  ease: 'power3.out',
+  clearProps: 'all'
+}, '-=0.4');
 
 // 4. Reveal Sections on Scroll
 const sections = document.querySelectorAll('.section');
