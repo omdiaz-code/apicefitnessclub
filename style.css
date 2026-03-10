@@ -223,8 +223,6 @@ h4 {
   position: relative;
   z-index: 20;
   max-width: 900px;
-  opacity: 1 !important;
-  visibility: visible !important;
 }
 
 .badge {
@@ -289,8 +287,6 @@ h4 {
   letter-spacing: 0.05em;
   transition: var(--transition-smooth);
   cursor: pointer;
-  opacity: 1;
-  visibility: visible;
 }
 
 .btn-primary {
