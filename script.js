@@ -53,38 +53,36 @@ navLinks.forEach(link => {
 // 3. Hero Entrance Animation
 const heroTl = gsap.timeline();
 
-heroTl.from('.badge', {
-  y: 20,
-  opacity: 0,
+heroTl.to('.badge', {
+  y: 0,
+  opacity: 1,
   duration: 0.8,
   ease: 'power2.out'
 })
-.from('.hero-title', {
-  y: 60,
-  opacity: 0,
+.to('.hero-title', {
+  y: 0,
+  opacity: 1,
   duration: 1.2,
   ease: 'expo.out'
 }, '-=0.4')
-.from('.hero-date', {
-  y: 30,
-  opacity: 0,
+.to('.hero-date', {
+  y: 0,
+  opacity: 1,
   duration: 1,
   ease: 'power3.out'
 }, '-=0.8')
-.from('.hero-text', {
-  y: 20,
-  opacity: 0,
+.to('.hero-text', {
+  y: 0,
+  opacity: 1,
   duration: 1,
   ease: 'power3.out'
 }, '-=0.8')
-.from('.hero-actions .btn', {
-  y: 40,
-  opacity: 0,
-  stagger: 0.2,
+.to('.hero-actions', {
+  y: 0,
+  opacity: 1,
   duration: 0.8,
-  ease: 'power3.out',
-  clearProps: 'all'
-}, '-=0.4');
+  ease: 'power3.out'
+}, '-=0.6');
 
 // 4. Reveal Sections on Scroll
 const sections = document.querySelectorAll('.section');
