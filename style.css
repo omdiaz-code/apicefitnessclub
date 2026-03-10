@@ -153,7 +153,6 @@ h4 {
 
 .logo-img {
   height: 50px;
-  border-radius: 12px;
   transition: var(--transition-smooth);
 }
 
@@ -801,7 +800,6 @@ h4 {
 
 .footer-logo {
   height: 60px;
-  border-radius: 12px;
   margin-bottom: 32px;
 }
 
