@@ -23,6 +23,13 @@ if (fs.readFileSync(TEAM_DATA_PATH).length === 0) {
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  const forbidden = ['server.js', 'package.json', 'package-lock.json', 'data', '.env', '.git'];
+  if (forbidden.some(file => req.path.includes(file))) {
+    return res.status(403).send('Access Denied');
+  }
+  next();
+});
 app.use(express.static(__dirname)); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
