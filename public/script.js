@@ -237,3 +237,140 @@ if (parallaxLogo) {
   document.body.addEventListener('click', initOrientation, { once: true });
   document.body.addEventListener('touchstart', initOrientation, { once: true });
 }
+
+// 8. Dynamic Content System
+const shuffleArray = (array) => {
+  const newArr = [...array];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+};
+
+async function initPageContent() {
+  const path = window.location.pathname;
+
+  // --- TEAM PAGE ---
+  if (path.includes('/equipo/')) {
+    const teamWrapper = document.getElementById('team-wrapper');
+    if (!teamWrapper) return;
+
+    try {
+      const res = await fetch('/api/team');
+      let members = await res.json();
+      if (members.length > 0) {
+        // members = shuffleArray(members); // Optional: if you want them random in the carousel too
+        teamWrapper.innerHTML = members.map(m => `
+          <div class="swiper-slide">
+            <div class="team-card">
+              <div class="team-photo-container">
+                <img src="${m.photo || '../logo.png'}" alt="${m.name}" class="team-photo">
+              </div>
+              <div class="team-info">
+                <h3 class="team-name">${m.name}</h3>
+                <p class="team-desc">${m.desc}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Initialize Swiper
+        new Swiper('.team-carousel', {
+          slidesPerView: 1,
+          spaceBetween: 30,
+          loop: true,
+          autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+          breakpoints: {
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }
+        });
+      }
+    } catch (e) { console.error('Error loading team carousel:', e); }
+  }
+
+  // --- INSTALLATIONS PAGE ---
+  if (path.includes('/instalaciones/')) {
+    const items = document.querySelectorAll('.facility-item');
+    items.forEach(async (item) => {
+      const album = item.getAttribute('data-album') || 'fuerza';
+      try {
+        const res = await fetch(`/api/images/${album}`);
+        let images = await res.json();
+        if (images.length > 0) {
+          const placeholder = item.querySelector('.facility-image-placeholder');
+          if (!placeholder) return;
+          
+          const slides = shuffleArray(images);
+          placeholder.innerHTML = `
+            <div class="content-slider">
+              ${slides.map(img => `<img src="${img}" class="slide-img">`).join('')}
+            </div>
+          `;
+          startMiniSlider(placeholder.querySelector('.content-slider'));
+        }
+      } catch (e) { console.error(`Error loading installations (${album}):`, e); }
+    });
+  }
+
+  // --- EXPERIENCE/BENEFITS PAGE ---
+  if (path.includes('/beneficios/')) {
+    const cards = document.querySelectorAll('.exp-card');
+    try {
+      const res = await fetch('/api/images/beneficios');
+      let images = await res.json();
+      if (images.length > 0) {
+        cards.forEach(card => {
+          const placeholder = card.querySelector('.exp-image-placeholder');
+          if (!placeholder) return;
+          
+          const slides = shuffleArray(images);
+          placeholder.innerHTML = `
+            <div class="content-slider">
+              ${slides.map(img => `<img src="${img}" class="slide-img">`).join('')}
+            </div>
+          `;
+          startMiniSlider(placeholder.querySelector('.content-slider'));
+        });
+      }
+    } catch (e) { console.error('Error loading experience:', e); }
+  }
+}
+
+function startMiniSlider(container) {
+  const imgs = container.querySelectorAll('.slide-img');
+  if (imgs.length <= 1) return;
+
+  let current = 0;
+  imgs.forEach((img, i) => {
+    img.style.opacity = i === 0 ? '1' : '0';
+    img.style.position = 'absolute';
+    img.style.top = '0';
+    img.style.left = '0';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.style.transition = 'opacity 1s ease-in-out';
+  });
+
+  setInterval(() => {
+    const next = (current + 1) % imgs.length;
+    imgs[current].style.opacity = '0';
+    imgs[next].style.opacity = '1';
+    current = next;
+  }, 3000 + Math.random() * 2000); // Random delay for more "natural" look
+}
+
+window.addEventListener('load', initPageContent);
