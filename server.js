@@ -23,7 +23,7 @@ if (fs.readFileSync(TEAM_DATA_PATH).length === 0) {
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); 
+app.use(express.static(__dirname)); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Storage Configuration
