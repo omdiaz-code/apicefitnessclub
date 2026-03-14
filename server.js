@@ -1,15 +1,17 @@
-const express = require('express');
-const multer = require('multer');
-const cors = require('cors');
-const fs = require('fs-extra');
-const path = require('path');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.SECRET_KEY || 'apice_secret_key_2025';
+
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Database Paths
 const TEAM_DATA_PATH = path.join(__dirname, 'data', 'team.json');
@@ -33,17 +35,17 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname)); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Storage Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+// Cloudinary Storage Configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
     const album = req.body.album || 'general';
-    const dest = path.join(__dirname, 'uploads', album);
-    fs.ensureDirSync(dest);
-    cb(null, dest);
+    return {
+      folder: `apice/${album}`,
+      tags: [album],
+      resource_type: 'auto'
+    };
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
 });
 const upload = multer({ storage });
 
@@ -76,15 +78,18 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// GET Images by album (for non-structured sections)
+// GET Images by album (using Cloudinary tags)
 app.get('/api/images/:album', async (req, res) => {
   const { album } = req.params;
-  const albumPath = path.join(__dirname, 'uploads', album);
   try {
-    if (!(await fs.pathExists(albumPath))) return res.json([]);
-    const files = await fs.readdir(albumPath);
-    res.json(files.map(file => `/uploads/${album}/${file}`));
-  } catch (error) { res.status(500).json({ error: 'Error' }); }
+    const { resources } = await cloudinary.api.resources_by_tag(album, {
+      max_results: 100
+    });
+    res.json(resources.map(file => file.secure_url));
+  } catch (error) { 
+    console.error('Cloudinary fetch error:', error);
+    res.status(500).json({ error: 'Error' }); 
+  }
 });
 
 // GET Team Data
@@ -98,21 +103,16 @@ app.get('/api/team', async (req, res) => {
 // POST Add Team Member
 app.post('/api/team', authenticateToken, upload.single('photo'), async (req, res) => {
   const { name, desc } = req.body;
-  const photo = req.file ? `/uploads/equipo/${req.file.filename}` : null;
+  const photo = req.file ? req.file.path : null;
+  const public_id = req.file ? req.file.filename : null;
   
-  console.log('--- Intentando guardar integrante ---');
-  console.log('Body:', req.body);
-  console.log('File:', req.file);
-
   try {
     const team = await fs.readJson(TEAM_DATA_PATH);
-    const newMember = { id: Date.now(), name, desc, photo };
+    const newMember = { id: Date.now(), name, desc, photo, public_id };
     team.push(newMember);
     await fs.writeJson(TEAM_DATA_PATH, team);
-    console.log('Guardado exitoso:', newMember);
     res.json({ success: true, member: newMember });
   } catch (err) { 
-    console.error('Error al guardar integrante:', err);
     res.status(500).json({ success: false, error: err.message }); 
   }
 });
@@ -123,8 +123,8 @@ app.delete('/api/team/:id', authenticateToken, async (req, res) => {
   try {
     let team = await fs.readJson(TEAM_DATA_PATH);
     const member = team.find(m => m.id == id);
-    if (member && member.photo) {
-        await fs.remove(path.join(__dirname, member.photo));
+    if (member && member.public_id) {
+        await cloudinary.uploader.destroy(member.public_id);
     }
     team = team.filter(m => m.id != id);
     await fs.writeJson(TEAM_DATA_PATH, team);
@@ -137,13 +137,33 @@ app.post('/api/upload', authenticateToken, upload.array('images'), (req, res) =>
   res.json({ success: true });
 });
 
-// Generic Delete
+// Generic Delete by URL (Helper needed to parse Public ID)
 app.delete('/api/images', authenticateToken, async (req, res) => {
   const { imageUrl } = req.body;
   try {
-    await fs.remove(path.join(__dirname, imageUrl));
+    // Extract public_id from Cloudinary URL (assuming standard format)
+    // Format: .../upload/v12345/folder/id.jpg
+    const parts = imageUrl.split('/');
+    const fileWithExt = parts.pop();
+    const id = fileWithExt.split('.')[0];
+    const folder = parts.pop();
+    const album = parts.pop();
+    const publicId = `${album}/${folder}/${id}`; // This depends on your 'folder' config in CloudinaryStorage
+    
+    // Simpler: Just rely on the tags for listing, but deletion needs public_id.
+    // For now, let's just delete by searching the resource first or extracting it better.
+    // Actually, req.file.filename in multer-storage-cloudinary IS the public_id.
+    
+    // We'll use a regex for safety
+    const match = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-z]+$/i);
+    if (match) {
+      await cloudinary.uploader.destroy(match[1]);
+    }
     res.json({ success: true });
-  } catch (error) { res.status(500).json({ error: 'Error' }); }
+  } catch (error) { 
+    console.error('Delete error:', error);
+    res.status(500).json({ error: 'Error' }); 
+  }
 });
 
 app.listen(PORT, () => {
